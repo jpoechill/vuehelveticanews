@@ -2,6 +2,10 @@
 
 > A Vue.js project
 
+## Screenshot
+
+![Screenshot](/static/vuehelveticanews-ss.png)
+
 ## Build Setup
 
 ``` bash

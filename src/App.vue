@@ -2,19 +2,22 @@
   <div id="app">
     <div class="container">
       <div class="row">
-        <nav class="navbar navbar-toggleable-md navbar-light col-lg-12">
+        <nav class="navbar navbar-toggleable-md navbar-light col-lg-12" style="padding-bottom: 0px; padding-top: 0px; padding-left: 0px;">
           <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" style="background-color: #fff; right: 26px !important; border-radius: 0px;">
             <span class="navbar-toggler-icon"></span>
           </button>
           <!-- <a class="navbar-brand" href="#">Navbar</a> -->
-          <span class="navbar-brand" v-on:click="myFilter('clear')" style="font-size: 40px;font-weight: 600;background-color: #333;letter-spacing: 1px;padding: 6px 24px 6px 12px; margin-right: 10px; border-left: 12px solid #B8E986;">
+          <span class="navbar-brand" v-on:click="myFilter('clear')" style="font-size: 30px;font-weight: 600;background-color: #333;letter-spacing: 1px; padding: 6px 20px 6px 18px; margin-right: 10px; margin-left: -10px;">
             <router-link :to="{ path: '/' }" class="title" style="color: #fff;">
-              {{ titleText }}</router-link>
+              <span style="padding: 0px 4px 2px 4px; background-color: rgba(60,154,214,.6)">
+                {{ titleText }}
+              </span>
+            </router-link>
           </span>
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
               <li class="nav-item" v-for="link in links"
-                style="font-size: 40px; font-weight: 600; padding-right: 20px;"
+                style="font-size: 30px; font-weight: 600; padding-right: 20px;"
                 v-on:click="myFilter(link.title)"
               >
                 <span style="white-space: nowrap;">
@@ -24,7 +27,10 @@
                     class="header-link"
                     v-bind:class="{ 'header-link-active': link.active }"
                   >
-                  {{link.title}}</router-link>
+                    <span style="padding: 0px 4px 2px 4px; background-color: rgba(60,154,214,.4)">
+                      {{link.title}}
+                    </span>
+                  </router-link>
                 </span>
               </li>
             </ul>
@@ -32,7 +38,9 @@
         </nav>
       </div>
     </div>
-    <router-view :stories="newsStories" @clicked="myFilter"></router-view>
+    <div style="width: 100%; background: linear-gradient(90deg, #B8E986 20%, #FFF 20%);">
+      <router-view :stories="newsStories" @clicked="myFilter" style="background-color: #FFF; padding: 8px 0px 12px 24px;"></router-view>
+    </div>
   </div>
 </template>
 
@@ -109,6 +117,13 @@ export default {
         emoji: '🤺',
         id: 4,
         link: 'national-geographic',
+        active: false
+      },
+      {
+        title: 'techcrunch',
+        emoji: '👩‍💻',
+        id: 5,
+        link: 'techcrunch',
         active: false
       }
     ],
@@ -228,11 +243,12 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #333;
-  background-color: #fff;
+  background: linear-gradient(90deg, #4990E2 20%, #ccc 20%);
   margin-bottom: 2px;
 }
 
 body {
+  background-color: #333;
 }
 
 a {
@@ -243,18 +259,41 @@ a:active, a:visited {
   /*color: #D0011B;*/
 }
 
+.navbar-brand {
+  border-left: 10px solid #fff;
+  border-right: 10px solid #cbf2a2;
+}
+
+.navbar-brand:active {
+  border-left: 10px solid #fff;
+}
+
+.navbar-brand:hover {
+  border-left: 10px solid #fff;
+}
+
 .header-link-active, .header-link-active:hover{
-  color: #D0011B !important;
-  text-decoration: underline;
+  color: #fff !important;
+  text-decoration: none;
 }
 
 .header-link, .header-link:hover {
-  /*color: #4990E2;
-  text-decoration: none;*/
+  color: #4990E2;
+  text-decoration: none !important;
 }
 
 .addStory-active {
   display: none;
+}
+
+.nav-item {
+  padding: 6px;
+  /* border-left: 10px solid #fff; */
+}
+
+.nav-item:hover {
+  background-color: #FFF;
+  /* border-left: 10px solid #fff; */
 }
 
 .source-link {

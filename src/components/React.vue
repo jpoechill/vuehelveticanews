@@ -1,32 +1,26 @@
 <template>
   <div class="container">
-    <div class="row" style="font-size: 40px; margin-bottom: 0px; margin-top: 0px;">
-      <div class="col-md-12" style="line-height: 46px;">
-        <span v-for="(story, index) in sortedItems" v-if="index < 5">
-          <!-- story: {{ story.link }} id: {{ id }} <br /> -->
-          <!-- <span v-if="story.link === id"> -->
-            <span style="font-weight: bolder">article: </span>
-            <a :href="story.url" style="font-weight: bold;">{{ story.title }}</a>
-            <span style="font-weight: bolder">source: </span>
-            <a :href="story.url" class="source-link" style="font-weight: bold; ">
-              {{ getSourceURL(story.url) }}</a>
-            <span v-if="story.author" style="font-weight: bolder">author: </span>
-            {{ story.author }}
-            <!-- <span v-if="story.description" style="font-weight: bolder">description: </span>
-            {{ story.description }} -->
-            <span v-if="story.tags" style="font-weight: bolder">tags: </span>
-              <!-- <span v-for="tag in story.tags">
-                {{ tag }},
-              </span> -->
-              <span>
-                {{ story.tags }}
-              </span>
-            <!-- <span style="font-weight: bolder">clicks: </span>
-            {{ story.clicks }} -->
-            <span style="font-weight: bolder">added: </span>
-            {{ returnDate(story.publishedAt) }}
-          <!-- </span> -->
-        </span>
+    <div class="row" style="font-size: 30px; margin-bottom: 0px; margin-top: 0px;">
+      <div class="col-md-12" style="line-height: 35px;">
+        <div style="padding: 0px 2px 4px 2px; ;">
+          <div style="background-color: lightblue">
+            <span v-for="(story, index) in sortedItems">
+              <span style="color: #333; font-weight: bolder; margin-right: 2px;">article:</span>
+              <a :href="story.url" style="font-weight: bold; padding: 0px 4px 0px 4px; background-color: #333; color: #fff; font-size: 30px;">{{ story.title }}</a>
+              <span style="font-weight: bolder; padding: 0px 4px 2px 4px; background-color: crimson;">source:</span>
+              <a :href="story.url" class="source-link" style="font-weight: bold; ">
+                {{ getSourceURL(story.url) }}</a>
+              <span v-if="story.author" style="font-weight: 700;">author:</span>
+              <span style="padding: 0px 4px 2px 4px; background-color: #bbb; color: #fff; font-style: italic; font-weight: 600;">{{ story.author }}</span>
+              <span v-if="story.tags" style="font-weight: bolder">tags: </span>
+                <span>
+                  {{ story.tags }}
+                </span>
+              <span style="font-weight: bolder">added: </span>
+              {{ returnDate(story.publishedAt) }}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -99,7 +93,7 @@ input:-ms-input-placeholder {
   border: 0px solid;
   width: 100%;
   padding: 0px;
-  font-size: 32px;
+  font-size: 24px;
   font-weight: 400;
   color: #333;
   outline-width: 0;
