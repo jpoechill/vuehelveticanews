@@ -1,10 +1,10 @@
 <template>
   <div class="container">
-    <div class="row" style="font-size: 30px; margin-bottom: 0px; margin-top: 0px;">
+    <div class="row" style="font-size: 30px; margin-bottom: 1px; margin-top: 0px;">
       <div class="col-md-12" style="line-height: 35px;">
         <div style="padding: 0px 2px 4px 2px; ;">
           <div style="background-color: lightblue">
-            <span v-for="(story, index) in sortedItems">
+            <span v-for="(story, index) in sortedItems" v-if="index < storiesLimit">
               <span style="color: #333; font-weight: bolder; margin-right: 2px;">article:</span>
               <a :href="story.url" style="font-weight: bold; padding: 0px 4px 0px 4px; background-color: #333; color: #fff; font-size: 30px;">{{ story.title }}</a>
               <span style="font-weight: bolder; padding: 0px 4px 2px 4px; background-color: crimson;">source:</span>
@@ -19,10 +19,14 @@
               <span style="font-weight: bolder">added: </span>
               {{ returnDate(story.publishedAt) }}
             </span>
+            <span style="background-color: #FFF; padding: 0px 6px 1px 6px;">
+              o || {{ day[0] }}<strong><i>{{ day[1] }}</i></strong>
+            </span>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -30,17 +34,34 @@
 import moment from 'moment'
 
 export default {
-  name: 'React',
-  props: ['stories', 'id'],
+  name: 'Stories',
+  props: ['stories', 'id', 'show', 'userId'],
   created: function () {
-    // console.log('Created')
-    // console.log(this.stories)
-   this.$emit('clicked', this.id)
-    // console.log('ID: ' + this.id)
+    this.$emit('clicked', this.id)
+    this.getDay()
   },
+  data: () => ({
+    day: '',
+    schema: {
+      mtv: 5,
+      theverge: 5,
+      bbc: 5,
+      natgeo: 5,
+      techcrunch: 5
+    }
+  }),
   computed: {
     filterStories: function (id) {
       return self.stories
+    },
+    storiesLimit: function () {
+      let self = this
+
+      if (self.id) {
+        return self.schema[this.id]
+      } else {
+        return 6
+      }
     },
     sortedItems: function () {
       this.stories.sort((a, b) => {
@@ -52,6 +73,11 @@ export default {
     }
   },
   methods: {
+    getDay: function (){
+      let self = this
+      let d = new Date();
+      self.day = d.getDate().toString()
+    },
     getSourceURL: function (url) {
       if (url) {
         var url = url.replace(/^((\w+:)?\/\/[^\/]+\/?).*$/,'$1');

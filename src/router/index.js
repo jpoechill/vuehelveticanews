@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import React from '@/components/React'
+import Stories from '@/components/Stories'
 // import Vuejs from '@/components/Vue'
 // import Javascript from '@/components/Javascript'
 // import Design from '@/components/Design'
@@ -14,16 +14,18 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
+      // path: '/',
+
       path: '/',
-      name: 'Home',
-      component: React,
-      props: true
+      name: 'Stories',
+      components: { default: Stories },
+      props: { default: true }
     },
     {
       path: '/:id',
       name: 'React',
-      component: React,
-      props: true
+      components: { default: Stories },
+      props: { default: true }
     }
   ]
 })

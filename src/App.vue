@@ -2,14 +2,13 @@
   <div id="app">
     <div class="container">
       <div class="row">
-        <nav class="navbar navbar-toggleable-md navbar-light col-lg-12" style="padding-bottom: 0px; padding-top: 0px; padding-left: 0px;">
-          <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" style="background-color: #fff; right: 26px !important; border-radius: 0px;">
+        <nav class="navbar navbar-toggleable-md navbar-light col-lg-12 custom-navbar" style="">
+          <button class="navbar-toggler navbar-toggler-right custom-navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
-          <!-- <a class="navbar-brand" href="#">Navbar</a> -->
-          <span class="navbar-brand" v-on:click="myFilter('clear')" style="font-size: 30px;font-weight: 600;background-color: #333;letter-spacing: 1px; padding: 6px 20px 6px 18px; margin-right: 10px; margin-left: -10px;">
-            <router-link :to="{ path: '/' }" class="title" style="color: #fff;">
-              <span style="padding: 0px 4px 2px 4px; background-color: rgba(60,154,214,.6)">
+          <span class="navbar-brand" v-on:click="myFilter('clear')" style="">
+            <router-link :to="{ path: '/' }" class="title">
+              <span class="title-text">
                 {{ titleText }}
               </span>
             </router-link>
@@ -18,16 +17,18 @@
             <ul class="navbar-nav mr-auto">
               <li class="nav-item" v-for="link in links"
                 style="font-size: 30px; font-weight: 600; padding-right: 20px;"
-                v-on:click="myFilter(link.title)"
+                v-on:click="myFilter(link.title);"
+                v-bind:key="link.title"
+                v-bind:class="{ 'nav-item-active': link.active}"
               >
                 <span style="white-space: nowrap;">
                   {{ link.emoji }}
                   <router-link
-                    :to="{ path: link.title }"
+                    :to="{ path: link.title, params: { bird: 'word' }}"
                     class="header-link"
                     v-bind:class="{ 'header-link-active': link.active }"
                   >
-                    <span style="padding: 0px 4px 2px 4px; background-color: rgba(60,154,214,.4)">
+                    <span class="link-title">
                       {{link.title}}
                     </span>
                   </router-link>
@@ -38,8 +39,8 @@
         </nav>
       </div>
     </div>
-    <div style="width: 100%; background: linear-gradient(90deg, #B8E986 20%, #FFF 20%);">
-      <router-view :stories="newsStories" @clicked="myFilter" style="background-color: #FFF; padding: 8px 0px 12px 24px;"></router-view>
+    <div class="background" style="">
+      <router-view :stories="newsStories" @clicked="myFilter" class="router-view"></router-view>
     </div>
   </div>
 </template>
@@ -49,45 +50,24 @@ import Vue from 'vue'
 import firebase from 'firebase'
 import axios from 'axios'
 
-var config = {
-  apiKey: "AIzaSyCJMW11rNF_NINXFyv3W9PPOa_SfHyPK-0",
-  authDomain: "oogabooga-3750f.firebaseapp.com",
-  databaseURL: "https://oogabooga-3750f.firebaseio.com",
-  projectId: "oogabooga-3750f",
-  storageBucket: "oogabooga-3750f.appspot.com",
-  messagingSenderId: "316290488240"
-};
-
-
-var db = firebase.initializeApp(config);
-
 export default {
   name: 'app',
   props: ['id'],
   created: function () {
-    this.getStories()
+    let self = this
+    self.getStories()
 
-    setInterval(function(){
-      this.getStories()
-    }, 30000);
+
   },
   computed: {
-    convertedFireData: function () {
-      var fireData = this.fireData
-      var fireObject = {}
-
-      fireData.forEach(function (firebaseItem) {
-        fireObject[firebaseItem['.key']] = firebaseItem['.value'].reverse()
-      })
-
-      return fireObject
-    }
   },
   data: () => ({
     addStory: {
       text: '+',
       active: false
     },
+    day: '',
+    quote: '',
     loadingText: 'loading',
     loading: true,
     links: [
@@ -134,15 +114,8 @@ export default {
     windowWidth: 0,
     windowHeight: 0,
   }),
-  firebase: {
-    fireData: {
-      source: firebase.database().ref(),
-      readyCallback: function () {
-        this.loading = false
-      }
-    }
-  },
   mounted: function () {
+    let self = this
     this.$nextTick(function() {
       window.addEventListener('resize', this.getWindowWidth);
       window.addEventListener('resize', this.getWindowHeight);
@@ -152,12 +125,33 @@ export default {
       this.getWindowHeight()
     })
 
+    setInterval(function(){
+      self.getStories()
+    }, 120000);
+
+    this.getQuote()
+    this.getDay()
   },
   methods: {
+    getDay: function (){
+      let self = this
+      let d = new Date();
+      self.day = d.getDate().toString()
+    },
+    getQuote: function () {
+      let self = this
+      axios.get('https://talaikis.com/api/quotes/random/')
+        .then(response => {
+            self.quote = response.data.quote
+            self.author = ' –' + response.data.author
+          }
+        )
+    },
     getStories: function () {
       let self = this
       let promises = []
       let urlVendors = []
+      self.newsStories = []
 
       urlVendors = ['mtv-news', 'the-verge', 'bbc-news', 'national-geographic']
       promises = self.links.map((link) => {
@@ -166,23 +160,17 @@ export default {
         return axios.get(siteURL)
         .then(response => {
           var posts = response.data.articles
-          // self.newsStories.push = posts
-
 
           posts.forEach(function(item) {
             item.link = link.title
             Vue.set(self.newsStories, self.newsStories.length, item)
           })
-
-          console.log(posts)
         })
         .catch(e => {
-          // self.errors.push(e)
-          console.log(e)
+          self.errors.push(e)
         })
       })
     },
-
     getWindowWidth(event) {
       this.windowWidth = document.documentElement.clientWidth;
 
@@ -243,25 +231,61 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #333;
-  background: linear-gradient(90deg, #4990E2 20%, #ccc 20%);
+  background: linear-gradient(90deg, #4990E2 20%, #333 20%);
   margin-bottom: 2px;
 }
 
 body {
-  background-color: #333;
+  background-color: #EEE;
+  width: 100%;
+  height: auto;
+  background: url('/static/unsplash-clip-5.png') no-repeat center center fixed;
+  background-position: left bottom;
+  margin: auto;
+  background-size: cover;
+
+  /* Preserve aspet ratio */
+  min-width: 100%;
+  min-height: 100%;
 }
 
 a {
   color: #4990E2;
 }
 
-a:active, a:visited {
-  /*color: #D0011B;*/
+.background {
+  width: 100%; 
+  background: url('/static/unsplash-clip-6.png') no-repeat left top fixed; 
+  background-color: #FFF;
+}
+
+.router-view {
+  background-color: #FFF; 
+  padding: 8px 0px 4px 24px;
+}
+
+.custom-navbar {
+  padding-bottom: 0px; 
+  padding-top: 0px; 
+  padding-left: 0px;
+}
+
+.custom-navbar-toggler {
+  background-color: #fff; 
+  right: 26px !important; 
+  border-radius: 0px;
+}
+
+.title-text {
+  padding: 0px 4px 2px 4px; 
+  background-color: rgba(60,154,214,.6);
+  color: #FFF;
 }
 
 .navbar-brand {
   border-left: 10px solid #fff;
   border-right: 10px solid #cbf2a2;
+  font-size: 30px;font-weight: 600;background-color: #333;letter-spacing: 1px; padding: 6px 20px 6px 18px; margin-right: 10px; margin-left: -10px;
 }
 
 .navbar-brand:active {
@@ -273,12 +297,16 @@ a:active, a:visited {
 }
 
 .header-link-active, .header-link-active:hover{
-  color: #fff !important;
+  color: lightorange !important;
   text-decoration: none;
 }
 
-.header-link, .header-link:hover {
-  color: #4990E2;
+.header-link {
+  color: #EEE;
+  text-decoration: none !important;
+}
+
+.header-link:hover {
   text-decoration: none !important;
 }
 
@@ -288,12 +316,15 @@ a:active, a:visited {
 
 .nav-item {
   padding: 6px;
-  /* border-left: 10px solid #fff; */
 }
 
 .nav-item:hover {
+  background-color: #CCC;
+  color: lightorange;
+}
+
+.nav-item-active {
   background-color: #FFF;
-  /* border-left: 10px solid #fff; */
 }
 
 .source-link {
@@ -304,7 +335,6 @@ a:active, a:visited {
   padding: 16px;
   padding-top: 0px;
 }
-
 
 .title:link, .title:hover, .title:active, .title:visited {
   text-decoration: none;
@@ -320,16 +350,22 @@ a:active, a:visited {
   outline-width: 0;
 }
 
+.link-title {
+  padding: 0px 4px 2px 4px; 
+  background-color: rgba(60,154,214,.4)
+}
+
 .slide-fade-enter-active {
   transition: all .3s ease;
 }
+
 .slide-fade-leave-active {
   transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
 }
+
 .slide-fade-enter, .slide-fade-leave-to
 /* .slide-fade-leave-active below version 2.1.8 */ {
   transform: translateX(10px);
   opacity: 0;
 }
-
 </style>
